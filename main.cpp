@@ -7,39 +7,16 @@ int main() {
   nodes.push_back(DBNode(std::string("a"), 0));
   nodes.push_back(DBNode(std::string("b"), 1));
   nodes.push_back(DBNode(std::string("c"), 2));
-  nodes.push_back(DBNode(std::string("d"),3));
-  std::vector<std::vector<std::string>> edges;
-  std::vector<std::string> edgesA;
-  edgesA.push_back(std::string(""));      // A
-  edgesA.push_back(std::string("hates")); // B
-  edgesA.push_back(std::string(""));      // C
-  edgesA.push_back(std::string(""));      //D
-  edges.push_back(edgesA);
-
-  // b edges
-  std::vector<std::string> edgesB;
-  edgesB.push_back(std::string(""));      // A
-  edgesB.push_back(std::string(""));      // B
-  edgesB.push_back(std::string("likes")); // C
-  edgesB.push_back(std::string(""));      // D
-  edges.push_back(edgesB);
-  // c edges
-  std::vector<std::string> edgesC;
-  edgesC.push_back(std::string("likes")); // A
-  edgesC.push_back(std::string(""));      // B
-  edgesC.push_back(std::string(""));      // C
-  edgesC.push_back(std::string("likes"));      // D
-  edges.push_back(edgesC);
+  nodes.push_back(DBNode(std::string("d"), 3));
+  std::vector<relation> edges;
+  edges.push_back(relation{0, 1, std::string("likes")});
+  edges.push_back(relation{1, 2, std::string("hates")});
+  edges.push_back(relation{2, 3, std::string("ignores")});
+  edges.push_back(relation{3, 1, std::string("adores")});
+  edges.push_back(relation{3, 0, std::string("likes")});
 
 
-  std::vector<std::string> edgesD;
-  edgesD.push_back(std::string("likes")); // A
-  edgesD.push_back(std::string(""));      // B
-  edgesD.push_back(std::string("hates"));      // C
-  edgesD.push_back(std::string(""));      // D
-  edges.push_back(edgesC);
   DBGraph graph = DBGraph(nodes, edges);
 
-  std::cout << graph.getGRAMString()
-            << "\n";
+  std::cout << graph.getGRAMString() << "\n";
 }
