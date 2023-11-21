@@ -13,5 +13,6 @@ public:
 
 private:
   uint32_t index;
+  //@TODO this value needs to be arbitrary, any struct will do, even with nested structs
   std::string value;
 };
