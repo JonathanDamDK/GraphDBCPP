@@ -11,6 +11,8 @@ struct relation {
 
   std::string value;
 };
+
+
 class DBGraph {
 public:
   //@TODO write parser of to help with GRAM.

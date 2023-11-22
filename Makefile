@@ -5,10 +5,12 @@ all: prog
 
 debug: CFLAGS += -g
 debug: prog
+verbose: CFLAGS += -v
+verbose: prog
 
 
-prog: main.o DBNode.o DBGraph.o simdjson.o
-	$(CC) $(OBJDIR)/main.o  $(OBJDIR)/DBNode.o  $(OBJDIR)/DBGraph.o $(OBJDIR)/simdjson.o -o prog
+prog: main.o DBNode.o DBGraph.o simdjson.o NodeAttribute.o PersonAttribute.o
+	$(CC) $(OBJDIR)/main.o  $(OBJDIR)/DBNode.o  $(OBJDIR)/DBGraph.o $(OBJDIR)/simdjson.o $(OBJDIR)/PersonAttribute.o $(OBJDIR)/NodeAttribute.o -o prog
 
 main.o: main.cpp 
 	@mkdir -p $(OBJDIR)
@@ -25,6 +27,13 @@ simdjson.o: simdjson.cpp simdjson.h
 	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) simdjson.cpp -o $(OBJDIR)/$@
 
+NodeAttribute.o: NodeAttribute.cpp NodeAttribute.h 
+	@mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) NodeAttribute.cpp -o $(OBJDIR)/$@
+
+PersonAttribute.o: PersonAttribute.cpp PersonAttribute.h 
+	@mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) PersonAttribute.cpp -o $(OBJDIR)/$@
 clean:
 		rm -rf *.o
 		rm -rf $(OBJDIR)/*.o

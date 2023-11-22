@@ -1,26 +1,30 @@
 [
   {
   "index" : 0,
+  "labels" : ["User", "Admin"],
+  "textVal" : "a",
   "edges" : [{
     "to": 1,
-    "attributes" : {"Name": "Likes"}
+    "label" : "Likes"
   }
   ],
   "attributes" :  {
     "name": "Jonathan",
-    "salary": "2000"
+    "salary": 2000
   }
   },
   {
     "index" : 1,
+    "textVal" : "b",
+   "labels" : ["Admin", "User"],
     "edges" : [{
       "to": 0,
-      "attributes" : {"Name": "Likes"}
+      "label" : "Likes"
     }
     ],
     "attributes" :  {
       "name": "Emilie",
-      "salary": "2000"
+      "salary": 2000
     }
   }
 ]
