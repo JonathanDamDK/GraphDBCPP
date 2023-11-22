@@ -14,9 +14,6 @@ int main() {
   edges.push_back(relation{2, 3, std::string("ignores")});
   edges.push_back(relation{3, 1, std::string("adores")});
   edges.push_back(relation{3, 0, std::string("likes")});
-
-
   DBGraph graph = DBGraph(nodes, edges);
-
   std::cout << graph.getGRAMString() << "\n";
 }
