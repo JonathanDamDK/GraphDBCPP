@@ -1,0 +1,26 @@
+[
+  {
+  "index" : 0,
+  "edges" : [{
+    "to": 1,
+    "attributes" : {"Name": "Likes"}
+  }
+  ],
+  "attributes" :  {
+    "name": "Jonathan",
+    "salary": "2000"
+  }
+  },
+  {
+    "index" : 1,
+    "edges" : [{
+      "to": 0,
+      "attributes" : {"Name": "Likes"}
+    }
+    ],
+    "attributes" :  {
+      "name": "Emilie",
+      "salary": "2000"
+    }
+  }
+]

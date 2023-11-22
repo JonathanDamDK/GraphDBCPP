@@ -2,6 +2,7 @@
 
 #include "DBGraph.h"
 #include "DBNode.h"
+#include "simdjson.h"
 int main() {
   std::vector<DBNode> nodes;
   nodes.push_back(DBNode(std::string("a"), 0));
@@ -16,4 +17,13 @@ int main() {
   edges.push_back(relation{3, 0, std::string("likes")});
   DBGraph graph = DBGraph(nodes, edges);
   std::cout << graph.getGRAMString() << "\n";
+  simdjson::dom::parser parser;
+  simdjson::padded_string json =
+      simdjson::padded_string::load("./DBFileFormats/graphA.json");
+  for (simdjson::dom::object node : parser.parse(json)) {
+    std::cout << node["index"] << "\n";
+    for (simdjson::dom::object edge : node["edges"]) {
+      std::cout << "edge from " << node["index"] << " to "<<  edge["to"] << "\n";
+    }
+  }
 }
