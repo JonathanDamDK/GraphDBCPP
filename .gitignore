@@ -1,3 +1,4 @@
 a.out.*
 *.o
+prog
 a.out.DSYM/*
