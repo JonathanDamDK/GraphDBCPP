@@ -19,17 +19,17 @@ int main() {
   edges.push_back(relation{3, 1, std::string("adores")});
   edges.push_back(relation{3, 0, std::string("likes")});
   DBGraph graph = DBGraph(nodes, edges);
-  std::cout << graph.getGRAMString() << "\n";
   simdjson::dom::parser parser;
   simdjson::padded_string json =
       simdjson::padded_string::load("./DBFileFormats/graphA.json");
+
+  std::vector<NodeAttribute<JsonAttribute, JsonAttribute>> nodeList;
+  //parsing in the graph from JSON
   for (simdjson::dom::object node : parser.parse(json)) {
-    NodeAttribute<JsonAttribute> a;
-    a.mapJson(node);
-    std::cout << "first label:"
-              << std::string(std::string_view(
-                     a.attributes.jsonObj["name"].get_string()))
-              << "\n";
-    return 0;
+    NodeAttribute<JsonAttribute, JsonAttribute> currNode;
+    currNode.mapJson(node);
+    nodeList.push_back(currNode);
   }
+  std::cout << "edge " << nodeList[0].edges[0].label << "\n";
+  return 0;
 }

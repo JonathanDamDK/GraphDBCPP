@@ -5,7 +5,10 @@
   "textVal" : "a",
   "edges" : [{
     "to": 1,
-    "label" : "Likes"
+    "label" : "Likes",
+    "attributes" : {
+          "when": "yesterday"
+    }
   }
   ],
   "attributes" :  {
@@ -19,7 +22,10 @@
    "labels" : ["Admin", "User"],
     "edges" : [{
       "to": 0,
-      "label" : "Likes"
+      "label" : "Likes",
+      "attributes" : {
+          "when": "yesterday"
+      }
     }
     ],
     "attributes" :  {
