@@ -9,15 +9,17 @@ int main() {
   simdjson::padded_string json =
       simdjson::padded_string::load("./DBFileFormats/graphA.json");
 
-  std::vector<NodeAttribute<JsonAttribute, PersonAttribute>> nodeList;
+  std::vector<NodeAttribute<JsonAttribute, JsonAttribute>> nodeList;
   // parsing in the graph from JSON
   for (simdjson::dom::object node : parser.parse(json)) {
-    NodeAttribute<JsonAttribute, PersonAttribute> currNode;
+    NodeAttribute<JsonAttribute, JsonAttribute> currNode;
     currNode.mapJson(node);
     nodeList.push_back(currNode);
   }
+  DBGraph<JsonAttribute, JsonAttribute> graph = DBGraph<JsonAttribute, JsonAttribute>(nodeList);
+  auto result = graph.getNodesWithEdgeLabel(0, "Likes");
   std::cout << "edge "
-            << nodeList[nodeList[0].edges[0].to].edges[0].attributes.name
+            << result.size()
             << "\n";
   return 0;
 }

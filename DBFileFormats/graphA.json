@@ -5,11 +5,11 @@
   "textVal" : "a",
   "edges" : [{
     "to": 1,
-    "label" : "Likes",
-    "attributes" : {
-          "name": "yesterday",
-          "salary" : 1000
-    }
+    "label" : "Likes"
+  },
+  {
+    "to" : 2,
+    "label" : "Likes"
   }
   ],
   "attributes" :  {
@@ -23,16 +23,25 @@
    "labels" : ["Admin", "User"],
     "edges" : [{
       "to": 0,
-      "label" : "Likes",
-         "attributes" : {
-          "name": "Brrr",
-          "salary" : 1000
-        }
-    }    
+      "label" : "Likes"
+      }
     ],
     "attributes" :  {
       "name": "Emilie",
       "salary": 2000
+    }
+  },
+  {
+    "index" : 2,
+    "textVal" : "c",
+   "labels" : ["User"],
+    "edges" : [{
+      "to": 1,
+      "label" : "Likes"
+      }
+    ],
+    "attributes" :  {
+      "name": "John doe"
     }
   }
 ]
