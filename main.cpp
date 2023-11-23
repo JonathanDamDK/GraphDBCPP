@@ -22,6 +22,9 @@ int main() {
   // auto result = graph.getNodesWithEdgeLabel(0, "Likes");
 
   CipherParser Cparser;
-  Cparser.parse("(bob:Person:User)-[:Likes]->(alice:User)");
+  Cparser.parse(
+      "(bob:User{age: 50})-[:Wrote{timeSpent: 12}]->(book:Book{edition:2})");
+  std::cout << std::get<int>(
+      Cparser.edges[0].attributes->find("timeSpent")->second);
   return 0;
 }

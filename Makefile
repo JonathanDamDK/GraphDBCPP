@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -std=c++14 -c 
+CFLAGS = -std=c++17 -c 
 OBJDIR = Objects
 all: prog
 
