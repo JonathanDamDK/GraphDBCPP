@@ -10,6 +10,7 @@
           "name": "yesterday",
           "salary" : 1000
     }
+  }
   ],
   "attributes" :  {
     "name": "Jonathan",
@@ -26,7 +27,8 @@
          "attributes" : {
           "name": "Brrr",
           "salary" : 1000
-    }    }
+        }
+    }    
     ],
     "attributes" :  {
       "name": "Emilie",

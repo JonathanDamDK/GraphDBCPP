@@ -10,16 +10,12 @@ verbose: prog
 
 OBJECTS = $(wildcard $(OBJDIR)/*.o)
 
-prog: main.o DBNode.o DBGraph.o simdjson.o NodeAttribute.o PersonAttribute.o JsonAttribute.o Edge.o
+prog: main.o DBGraph.o simdjson.o NodeAttribute.o PersonAttribute.o JsonAttribute.o Edge.o
 	$(CC)  $(OBJECTS) -o prog
 
 main.o: main.cpp 
 	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) main.cpp -o $(OBJDIR)/$@
-
-DBNode.o: DBNode.cpp DBNode.h
-	@mkdir -p $(OBJDIR)
-	$(CC) $(CFLAGS) DBNode.cpp -o $(OBJDIR)/$@
 
 DBGraph.o: DBGraph.cpp  DBGraph.h
 	@mkdir -p $(OBJDIR)
