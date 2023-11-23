@@ -9,8 +9,8 @@ verbose: CFLAGS += -v
 verbose: prog
 
 
-prog: main.o DBNode.o DBGraph.o simdjson.o NodeAttribute.o PersonAttribute.o
-	$(CC) $(OBJDIR)/main.o  $(OBJDIR)/DBNode.o  $(OBJDIR)/DBGraph.o $(OBJDIR)/simdjson.o $(OBJDIR)/PersonAttribute.o $(OBJDIR)/NodeAttribute.o -o prog
+prog: main.o DBNode.o DBGraph.o simdjson.o NodeAttribute.o PersonAttribute.o JsonAttribute.o
+	$(CC) $(OBJDIR)/main.o  $(OBJDIR)/DBNode.o  $(OBJDIR)/DBGraph.o $(OBJDIR)/simdjson.o $(OBJDIR)/JsonAttribute.o $(OBJDIR)/PersonAttribute.o $(OBJDIR)/NodeAttribute.o -o prog
 
 main.o: main.cpp 
 	@mkdir -p $(OBJDIR)
@@ -34,6 +34,10 @@ NodeAttribute.o: NodeAttribute.cpp NodeAttribute.h
 PersonAttribute.o: PersonAttribute.cpp PersonAttribute.h 
 	@mkdir -p $(OBJDIR)
 	$(CC) $(CFLAGS) PersonAttribute.cpp -o $(OBJDIR)/$@
+
+JsonAttribute.o: JsonAttribute.cpp JsonAttribute.h 
+	@mkdir -p $(OBJDIR)
+	$(CC) $(CFLAGS) JsonAttribute.cpp -o $(OBJDIR)/$@
 clean:
 		rm -rf *.o
 		rm -rf $(OBJDIR)/*.o

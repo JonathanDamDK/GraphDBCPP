@@ -1,8 +1,8 @@
 #include "NodeAttribute.h"
+#include "JsonAttribute.h"
 #include "PersonAttribute.h"
 #include "simdjson.h"
 #include <string_view>
-
 template <class T> NodeAttribute<T>::NodeAttribute() {}
 
 template <class T> void NodeAttribute<T>::mapJson(simdjson::dom::object obj) {
@@ -28,11 +28,13 @@ template <class T> void NodeAttribute<T>::mapJson(simdjson::dom::object obj) {
     std::cout << "Something went wrong while parsing labels";
   }
   try {
-    further_attribute.mapJson(obj["attributes"]);
+    attributes.mapJson(obj["attributes"]);
   } catch (simdjson::simdjson_error) {
     std::cout << "Something went wrong while parsing attributes \n";
   }
   return;
 }
-
+// This is a fancy hack to make sure compiler does not fail compilation when
+// NodeAttribute<T> is instantiated
 template class NodeAttribute<PersonAttribute>;
+template class NodeAttribute<JsonAttribute>;

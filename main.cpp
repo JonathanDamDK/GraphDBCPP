@@ -2,9 +2,10 @@
 
 #include "DBGraph.h"
 #include "DBNode.h"
+#include "JsonAttribute.h"
 #include "NodeAttribute.h"
-#include "simdjson.h"
 #include "PersonAttribute.h"
+#include "simdjson.h"
 int main() {
   std::vector<DBNode> nodes;
   nodes.push_back(DBNode(std::string("a"), 0));
@@ -23,10 +24,12 @@ int main() {
   simdjson::padded_string json =
       simdjson::padded_string::load("./DBFileFormats/graphA.json");
   for (simdjson::dom::object node : parser.parse(json)) {
-    NodeAttribute<PersonAttribute> a;
+    NodeAttribute<JsonAttribute> a;
     a.mapJson(node);
-    std::cout << "first label:" + a.further_attribute.name + "\n";
-
+    std::cout << "first label:"
+              << std::string(std::string_view(
+                     a.attributes.jsonObj["name"].get_string()))
+              << "\n";
     return 0;
   }
 }
