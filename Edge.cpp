@@ -1,5 +1,5 @@
 #include "Edge.h"
-
+#include "PersonAttribute.h"
 template <class T> void Edge<T>::mapJson(simdjson::dom::object obj) {
   // try to parse in the "to" property from an edge
   try {
@@ -24,4 +24,6 @@ template <class T> void Edge<T>::mapJson(simdjson::dom::object obj) {
   }
   return;
 }
+
+template class Edge<PersonAttribute>;
 template class Edge<JsonAttribute>;

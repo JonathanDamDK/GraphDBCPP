@@ -7,9 +7,9 @@
     "to": 1,
     "label" : "Likes",
     "attributes" : {
-          "when": "yesterday"
+          "name": "yesterday",
+          "salary" : 1000
     }
-  }
   ],
   "attributes" :  {
     "name": "Jonathan",
@@ -23,10 +23,10 @@
     "edges" : [{
       "to": 0,
       "label" : "Likes",
-      "attributes" : {
-          "when": "yesterday"
-      }
-    }
+         "attributes" : {
+          "name": "Brrr",
+          "salary" : 1000
+    }    }
     ],
     "attributes" :  {
       "name": "Emilie",

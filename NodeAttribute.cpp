@@ -49,4 +49,6 @@ void NodeAttribute<T, E>::mapJson(simdjson::dom::object obj) {
 // This is a fancy hack to make sure compiler does not fail compilation when
 // NodeAttribute<T> is instantiated
 template class NodeAttribute<PersonAttribute, JsonAttribute>;
+template class NodeAttribute<PersonAttribute, PersonAttribute>;
 template class NodeAttribute<JsonAttribute, JsonAttribute>;
+template class NodeAttribute<JsonAttribute, PersonAttribute>;
