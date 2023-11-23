@@ -1,3 +1,4 @@
+#include "CipherParser.h"
 #include "DBGraph.h"
 #include "JsonAttribute.h"
 #include "NodeAttribute.h"
@@ -16,10 +17,11 @@ int main() {
     currNode.mapJson(node);
     nodeList.push_back(currNode);
   }
-  DBGraph<JsonAttribute, JsonAttribute> graph = DBGraph<JsonAttribute, JsonAttribute>(nodeList);
-  auto result = graph.getNodesWithEdgeLabel(0, "Likes");
-  std::cout << "edge "
-            << result.size()
-            << "\n";
+  DBGraph<JsonAttribute, JsonAttribute> graph =
+      DBGraph<JsonAttribute, JsonAttribute>(nodeList);
+  // auto result = graph.getNodesWithEdgeLabel(0, "Likes");
+
+  CipherParser Cparser;
+  Cparser.parse("(bob:Person:User)-[:Likes]->(alice:User)");
   return 0;
 }
