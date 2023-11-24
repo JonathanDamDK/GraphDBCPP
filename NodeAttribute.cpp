@@ -17,6 +17,12 @@ void NodeAttribute<T, E>::mapJson(simdjson::dom::object obj) {
     std::cout << "\n Something went wrong while parsing textVal + " +
                      std::string(err.what()) + "\n";
   }
+  try {
+    uid = obj["uid"];
+  } catch (simdjson::simdjson_error err) {
+    std::cout << "\n Something went wrong while parsing uid + " +
+                     std::string(err.what()) + "\n";
+  }
   // parse the labels
   try {
     labels = std::vector<std::string>();

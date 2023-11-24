@@ -1,13 +1,55 @@
 #include "CipherParser.h"
 #include "CipherEntity.h"
+#include "DBGraph.h"
+#include "JsonAttribute.h"
+#include "NodeAttribute.h"
 #include "simdjson.h"
 #include <ctype.h>
 #include <exception>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>
 
+simdjson::dom::object CipherParser::getJsonFromMapAndDeleteItFromMemory(
+    std::unique_ptr<
+        std::unordered_map<std::string, std::variant<int, float, std::string>>>
+        map) {
+  simdjson::dom::object result;
+  // super slow bad solution below
+  std::string JSON;
+
+  JSON.append("{");
+  int count = 0;
+  for (auto &elem : *map) {
+    JSON.append("\"");
+    JSON.append(elem.first);
+    JSON.append("\"");
+    JSON.append(":");
+    try {
+      int res = std::get<int>(elem.second);
+      JSON.append(std::to_string(res));
+    } catch (std::bad_variant_access) {
+      try {
+        float res = std::get<float>(elem.second);
+        JSON.append(std::to_string(res));
+
+      } catch (std::bad_variant_access) {
+        std::string res = std::get<std::string>(elem.second);
+        JSON.append(res);
+      }
+    }
+    count++;
+    if (count < map->size()) {
+      JSON.append(",");
+    }
+  }
+  JSON.append("}");
+  //use class attached json parser instance to avoid nasty memory errors. As soon as the parser is deleted so is all its dom::objects, might be fixable.
+  result = jsonParser.parse(JSON);
+  return result;
+}
 std::string parseAttributeIdentifier(std::string string, int *index);
 std::variant<int, float, std::string> parseAttributeValue(std::string string,
                                                           int *index);
@@ -17,8 +59,9 @@ void CipherParser::parse(std::string string) {
   while (i < string.size()) {
     switch (string[i]) {
     case '(': {
-      i += 1;
+      i += 1; // consume '('
       auto entity = parseEntity(string, &i, ')');
+      auto debug = string[i];
       if (isPendingEdge) {
         pendingEdge->to = entity.identifier;
         edges.push_back(std::move(*pendingEdge));
@@ -29,7 +72,7 @@ void CipherParser::parse(std::string string) {
       break;
     }
     case '-': {
-      i += 1;
+      i += 1; // Consume '-'
       auto relation = parseRelation(string, &i);
       relation.from = previousIdentifier;
       isPendingEdge = true;
@@ -37,7 +80,7 @@ void CipherParser::parse(std::string string) {
       pendingEdge->identifier = relation.identifier;
       pendingEdge->label = relation.label[0];
       pendingEdge->attributes = std::move(relation.attributes);
-      pendingEdge->from  = previousIdentifier;
+      pendingEdge->from = previousIdentifier;
       break;
     }
     default:
@@ -59,7 +102,6 @@ CipherEdge CipherParser::parseRelation(std::string string, int *index) {
     case '[':
       *index += 1;
       entity = parseEntity(string, index, ']');
-      *index += 1; // to ignore the ] bracket
       break;
     case '-':
       if (*index + 1 >= string.size()) {
@@ -80,6 +122,8 @@ CipherEdge CipherParser::parseRelation(std::string string, int *index) {
       break;
     default:
       std::cout << "cant parse: " << current << "\n";
+      *index += 1;
+      break;
     }
     current = string[*index];
   }
@@ -142,6 +186,11 @@ CipherEntity CipherParser::parseEntity(std::string string, int *index,
   result.labels = labels;
   result.attributes = std::move(attributes);
   result.identifier = identifier;
+  // consume the close operator, this if statement SHOULD always be true but it
+  // is a safeguard for now, can possibly be removed.
+  if (current == delimeter) {
+    *index += 1;
+  }
   return result;
 }
 std::unique_ptr<
@@ -162,7 +211,11 @@ CipherParser::parseAttributes(std::string string, int *index) {
       *index += 1;
     }
     std::string identifier = parseAttributeIdentifier(string, index);
+    if (string[*index] == ':') {
+      *index += 1; // consume ':'
+    }
     auto value = parseAttributeValue(string, index);
+
     map->insert_or_assign(identifier, value);
     current = string[*index];
   }
@@ -175,10 +228,34 @@ std::variant<int, float, std::string> parseAttributeValue(std::string string,
   std::variant<int, float, std::string> result;
   bool isFloat = false;
   char current = string[*index];
-  while (current == ' ' || current == ':') {
+  if (current == ':') {
+    std::cout << "syntax error multiple ':' in attribute definition";
+    return result;
+  }
+  while (current == ' ') { // ignore whitespace
     *index += 1;
     current = string[*index];
   }
+  // parse strings
+  if (current == '\'') {
+    *index += 1; // consume '
+    current = string[*index];
+    while (current != '\'') {
+      if (current == '}' || *index + 1 >= string.size()) {
+        std::cout << "Syntax error string is not closed";
+      }
+      rawValue.push_back(current);
+      *index += 1;
+      current = string[*index];
+    }
+    // consume  ' character
+    *index += 1;
+    // return string
+    result = rawValue;
+    return result;
+  }
+
+  // parse non strings
   while (current != ',' && current != '}') {
     rawValue.push_back(current);
     *index += 1;
@@ -197,7 +274,8 @@ std::variant<int, float, std::string> parseAttributeValue(std::string string,
     }
 
   } catch (std::exception) {
-    result = rawValue;
+    std::cout << "error parsing number"
+              << "\n";
   }
 
   return result;
@@ -219,4 +297,18 @@ std::string parseAttributeIdentifier(std::string string, int *index) {
     current = string[*index];
   }
   return result;
+}
+void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
+  for (CipherEntity &node : nodes) {
+    auto resultNode = NodeAttribute<JsonAttribute, JsonAttribute>();
+    resultNode.uid = node.identifier;
+    resultNode.labels = node.labels;
+    resultNode.textVal = node.identifier;
+    resultNode.attributes = JsonAttribute();
+    simdjson::dom::object result =
+        getJsonFromMapAndDeleteItFromMemory(std::move(node.attributes));
+    std::cout << "i am desperate" << simdjson::to_string(result);
+    resultNode.attributes.mapJson(result);
+    graph->nodes.emplace(node.identifier, std::move(resultNode));
+  }
 }

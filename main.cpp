@@ -20,11 +20,14 @@ int main() {
   DBGraph<JsonAttribute, JsonAttribute> graph =
       DBGraph<JsonAttribute, JsonAttribute>(nodeList);
   // auto result = graph.getNodesWithEdgeLabel(0, "Likes");
-
+  std::cout << "edge to: " << graph.nodes.find("superid")->second.textVal;
   CipherParser Cparser;
-  Cparser.parse(
-      "(bob:User{age: 50})-[:Wrote{timeSpent: 12}]->(book:Book{edition:2})");
-  std::cout << std::get<int>(
-      Cparser.edges[0].attributes->find("timeSpent")->second);
+  Cparser.parse("(bob:User{age: 50})-[:Wrote{timeSpent : "
+                "'abasdasdasd'}]->(book:Book{edition:2})");
+  int debug = 0;
+  Cparser.executeQuery(&graph);
+
+  std::cout << "edge to: "
+            << graph.nodes.find("book")->second.textVal;
   return 0;
 }

@@ -1,9 +1,10 @@
 #include "Edge.h"
 #include "PersonAttribute.h"
+#include <string_view>
 template <class T> void Edge<T>::mapJson(simdjson::dom::object obj) {
   // try to parse in the "to" property from an edge
   try {
-    to = obj["to"].get_int64();
+    to = std::string(std::string_view(obj["to"].get_string()));
   } catch (simdjson::simdjson_error err) {
     std::cout << "\n Something went wrong while parsing 'to' " +
                      std::string(err.what()) + "\n";

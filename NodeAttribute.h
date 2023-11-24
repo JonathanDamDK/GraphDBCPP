@@ -7,6 +7,7 @@ template <class T, class E> class NodeAttribute : public Attribute {
 public:
   NodeAttribute();
   std::string textVal;
+  std::string uid;
   std::vector<std::string> labels;
   std::vector<Edge<E>>edges;
   T attributes;

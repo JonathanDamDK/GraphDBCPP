@@ -5,7 +5,7 @@
 template <class T> class Edge : public Attribute {
 
 public:
-  int to;
+  std::string to;
   std::string label;
   T attributes;
   static_assert(std::is_base_of<Attribute, T>::value,"The base of Edge does not derive from attribute");

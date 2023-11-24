@@ -1,42 +1,25 @@
 [
   {
   "index" : 0,
+  "uid" : "superid1",
   "labels" : ["User", "Admin"],
   "textVal" : "a",
   "edges" : [{
-    "to": 1,
+    "to": "superid",
     "label" : "Likes"
-  },
-  {
-    "to" : 2,
-    "label" : "Likes"
-  }
-  ],
+  }],
   "attributes" :  {
     "name": "Jonathan",
     "salary": 2000
   }
   },
   {
-    "index" : 1,
-    "textVal" : "b",
-   "labels" : ["Admin", "User"],
-    "edges" : [{
-      "to": 0,
-      "label" : "Likes"
-      }
-    ],
-    "attributes" :  {
-      "name": "Emilie",
-      "salary": 2000
-    }
-  },
-  {
     "index" : 2,
+    "uid" : "superid",
     "textVal" : "c",
    "labels" : ["User"],
     "edges" : [{
-      "to": 1,
+      "to": "superid1",
       "label" : "Likes"
       }
     ],

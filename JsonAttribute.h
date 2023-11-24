@@ -5,8 +5,6 @@
 class JsonAttribute : public Attribute {
 
 public:
-  std::string textVal;
-  std::vector<std::string> labels;
   simdjson::dom::object jsonObj;
   void mapJson(simdjson::dom::object) override;
 };
