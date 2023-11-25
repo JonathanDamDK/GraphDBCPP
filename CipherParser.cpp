@@ -1,6 +1,7 @@
 #include "CipherParser.h"
 #include "CipherEntity.h"
 #include "DBGraph.h"
+#include "Edge.h"
 #include "JsonAttribute.h"
 #include "NodeAttribute.h"
 #include "simdjson.h"
@@ -46,7 +47,8 @@ simdjson::dom::object CipherParser::getJsonFromMapAndDeleteItFromMemory(
     }
   }
   JSON.append("}");
-  //use class attached json parser instance to avoid nasty memory errors. As soon as the parser is deleted so is all its dom::objects, might be fixable.
+  // use class attached json parser instance to avoid nasty memory errors. As
+  // soon as the parser is deleted so is all its dom::objects, might be fixable.
   result = jsonParser.parse(JSON);
   return result;
 }
@@ -130,6 +132,7 @@ CipherEdge CipherParser::parseRelation(std::string string, int *index) {
   result.label = entity.labels[0];
   result.identifier = entity.identifier;
   result.attributes = std::move(entity.attributes);
+  result.hasAttributes = entity.hasAttributes;
   return result;
 }
 
@@ -155,6 +158,8 @@ CipherEntity CipherParser::parseEntity(std::string string, int *index,
     case '{':
       *index += 1;
       attributes = parseAttributes(string, index);
+      result.hasAttributes = true;
+
       break;
     case ':':
       labelIndex += 1;
@@ -299,16 +304,28 @@ std::string parseAttributeIdentifier(std::string string, int *index) {
   return result;
 }
 void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
+  // convert it to NodeAttribute instead
   for (CipherEntity &node : nodes) {
     auto resultNode = NodeAttribute<JsonAttribute, JsonAttribute>();
+    if (node.hasAttributes == true) {
+      resultNode.setHasAttributesTrue();
+    }
     resultNode.uid = node.identifier;
     resultNode.labels = node.labels;
     resultNode.textVal = node.identifier;
     resultNode.attributes = JsonAttribute();
     simdjson::dom::object result =
         getJsonFromMapAndDeleteItFromMemory(std::move(node.attributes));
-    std::cout << "i am desperate" << simdjson::to_string(result);
     resultNode.attributes.mapJson(result);
     graph->nodes.emplace(node.identifier, std::move(resultNode));
+  }
+
+  //pretty bad
+  for(auto &edge :edges){
+      auto node = &(graph->nodes.find(edge.from)->second);
+      Edge<JsonAttribute> resultEdge;
+      resultEdge.to = edge.to;
+      resultEdge.label = edge.label;
+      node->edges.push_back(resultEdge);
   }
 }

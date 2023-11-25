@@ -19,12 +19,22 @@ template <class T> void Edge<T>::mapJson(simdjson::dom::object obj) {
   // parsing the Attributes
   try {
     attributes.mapJson(obj["attributes"]);
+    hasAttributes = true;
   } catch (simdjson::simdjson_error err) {
     std::cout << "\n Something went wrong while parsing edge attributes: " +
                      std::string(err.what()) + "\n";
   }
   return;
 }
+template <class T> std::string Edge<T>::getJsonString() {
+  std::string result = "{ \"to\" : \"" + to + "\", \"label\": \"" + label + "\"";
+  if (hasAttributes == true) {
+    result.append(",\n\"attributes : " + attributes.getJsonString());
+  }
+  result.append("}");
 
-template class Edge<PersonAttribute>;
+  return result;
+}
+
+;
 template class Edge<JsonAttribute>;

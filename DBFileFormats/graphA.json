@@ -22,9 +22,6 @@
       "to": "superid1",
       "label" : "Likes"
       }
-    ],
-    "attributes" :  {
-      "name": "John doe"
-    }
-  }
+    ]
+      }
 ]

@@ -5,6 +5,7 @@
 #include "PersonAttribute.h"
 #include "simdjson.h"
 #include <iostream>
+
 int main() {
   simdjson::dom::parser parser;
   simdjson::padded_string json =
@@ -22,12 +23,34 @@ int main() {
   // auto result = graph.getNodesWithEdgeLabel(0, "Likes");
   std::cout << "edge to: " << graph.nodes.find("superid")->second.textVal;
   CipherParser Cparser;
-  Cparser.parse("(bob:User{age: 50})-[:Wrote{timeSpent : "
-                "'abasdasdasd'}]->(book:Book{edition:2})");
-  int debug = 0;
-  Cparser.executeQuery(&graph);
+  ;
 
-  std::cout << "edge to: "
-            << graph.nodes.find("book")->second.textVal;
-  return 0;
+  std::string input;
+  /*
+  // if the query should be written at runtime
+  //
+  std::cout << "Please write query: " << std::endl;
+  std::getline(std::cin, input);
+  */
+
+  // example query for debug
+  input = "(bob:User{age: 50})-[:Wrote{timeSpent : "
+          "'abasdasdasd'}]->(book:Book{edition:2})";
+
+  Cparser.parse(input);
+  Cparser.executeQuery(&graph);
+  std::string testResult;
+  testResult.append("{\n\"nodes\" [");
+  bool needsComma = false;
+  for (auto &node : graph.nodes) {
+    if (needsComma == false) {
+      testResult.append(node.second.getJsonString());
+      needsComma = true;
+    } else {
+      testResult.append("," + node.second.getJsonString());
+    }
+  }
+  testResult.append("]\n }");
+  std::cout << testResult;
+return 0;
 }

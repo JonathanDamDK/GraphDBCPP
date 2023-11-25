@@ -4,6 +4,34 @@
 #include "simdjson.h"
 #include <string_view>
 template <class T, class E> NodeAttribute<T, E>::NodeAttribute() {}
+template <class T, class E> std::string NodeAttribute<T, E>::getJsonString() {
+  std::string result = "{\"uid\" : \"" + uid + "\",\n \"labels \" : [ ";
+  bool haveComma = false;
+  for (auto label : labels) {
+    if (haveComma == false) {
+      result.append("\"" + label + "\"");
+      haveComma = true;
+    } else {
+      result.append(",\"" + label + "\"");
+    }
+  }
+  result.append("], \n\"edges\" : [");
+  bool needsComma = false;
+  for (auto edge : edges) {
+    if (needsComma == false) { // first element only
+      result.append(edge.getJsonString());
+    } else {
+      result.append("," + edge.getJsonString());
+    }
+  }
+  result.append("]");
+
+  if (hasAttributes == true) {
+    result.append(",\n \"attributes\" : " + attributes.getJsonString());
+  }
+  result.append("\n}");
+  return result;
+}
 
 template <class T, class E>
 void NodeAttribute<T, E>::mapJson(simdjson::dom::object obj) {
@@ -47,14 +75,13 @@ void NodeAttribute<T, E>::mapJson(simdjson::dom::object obj) {
 
   try {
     attributes.mapJson(obj["attributes"]);
-  } catch (simdjson::simdjson_error) {
-    std::cout << "Something went wrong while parsing attributes \n";
+    hasAttributes = true;
+  } catch (simdjson::simdjson_error err) {
+    std::cout << "Something went wrong while parsing attributes: " << err.what()
+              << "\n";
   }
   return;
 }
 // This is a fancy hack to make sure compiler does not fail compilation when
 // NodeAttribute<T> is instantiated
-template class NodeAttribute<PersonAttribute, JsonAttribute>;
-template class NodeAttribute<PersonAttribute, PersonAttribute>;
 template class NodeAttribute<JsonAttribute, JsonAttribute>;
-template class NodeAttribute<JsonAttribute, PersonAttribute>;

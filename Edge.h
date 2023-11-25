@@ -8,8 +8,10 @@ public:
   std::string to;
   std::string label;
   T attributes;
+  bool hasAttributes = false;
   static_assert(std::is_base_of<Attribute, T>::value,"The base of Edge does not derive from attribute");
   void mapJson(simdjson::dom::object) override;
+  std::string getJsonString() override;
 };
 
 

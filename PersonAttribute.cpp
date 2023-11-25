@@ -1,4 +1,9 @@
 #include "PersonAttribute.h"
+
+std::string PersonAttribute::getJsonString(){
+  return "{\"personAttribute\" : \"not implemented\"}";
+}
+
 void PersonAttribute::mapJson(simdjson::dom::object obj) {
   try {
     salary = int(obj["salary"].get_int64());
