@@ -7,13 +7,14 @@
 #include "simdjson.h"
 #include <ctype.h>
 #include <exception>
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <variant>
 
-simdjson::dom::object CipherParser::getJsonFromMapAndDeleteItFromMemory(
+simdjson::dom::object CipherParser::getJsonFromMapFreeMap(
     std::unique_ptr<
         std::unordered_map<std::string, std::variant<int, float, std::string>>>
         map) {
@@ -80,14 +81,13 @@ void CipherParser::parse(std::string string) {
       isPendingEdge = true;
       pendingEdge = new CipherEdge;
       pendingEdge->identifier = relation.identifier;
-      pendingEdge->label = relation.label[0];
+      pendingEdge->label = relation.label;
       pendingEdge->attributes = std::move(relation.attributes);
       pendingEdge->from = previousIdentifier;
       break;
     }
     default:
       i += 1;
-      std::cout << "main: " << string[i] << "\n";
       break;
     }
   }
@@ -181,13 +181,6 @@ CipherEntity CipherParser::parseEntity(std::string string, int *index,
     current = string[*index];
   }
 
-  // debug
-  std::cout << "identifier: " << identifier << "\n";
-  std::cout << "labels : [";
-  for (auto label : labels) {
-    std::cout << label << ",";
-  }
-  std::cout << "]\n";
   result.labels = labels;
   result.attributes = std::move(attributes);
   result.identifier = identifier;
@@ -304,6 +297,10 @@ std::string parseAttributeIdentifier(std::string string, int *index) {
   return result;
 }
 void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
+  executeCreate(graph);
+}
+
+void CipherParser::executeCreate(DBGraph<JsonAttribute, JsonAttribute> *graph) {
   // convert it to NodeAttribute instead
   for (CipherEntity &node : nodes) {
     auto resultNode = NodeAttribute<JsonAttribute, JsonAttribute>();
@@ -311,21 +308,47 @@ void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
       resultNode.setHasAttributesTrue();
     }
     resultNode.uid = node.identifier;
-    resultNode.labels = node.labels;
+    resultNode.labels = std::move(node.labels);
     resultNode.textVal = node.identifier;
     resultNode.attributes = JsonAttribute();
     simdjson::dom::object result =
-        getJsonFromMapAndDeleteItFromMemory(std::move(node.attributes));
+        getJsonFromMapFreeMap(std::move(node.attributes));
     resultNode.attributes.mapJson(result);
     graph->nodes.emplace(node.identifier, std::move(resultNode));
   }
+  // pretty bad
+  for (auto &edge : edges) {
+    auto node = &(graph->nodes.find(edge.from)->second);
+    Edge<JsonAttribute> resultEdge;
+    resultEdge.to = edge.to;
+    resultEdge.label = edge.label;
+    node->edges.push_back(resultEdge);
+  }
 
-  //pretty bad
-  for(auto &edge :edges){
-      auto node = &(graph->nodes.find(edge.from)->second);
-      Edge<JsonAttribute> resultEdge;
-      resultEdge.to = edge.to;
-      resultEdge.label = edge.label;
-      node->edges.push_back(resultEdge);
+  bool needsComma = false;
+  std::string jsonString;
+  jsonString.push_back('[');
+  for (auto &node : graph->nodes) {
+    if (needsComma == false) {
+      jsonString.append(node.second.getJsonString());
+      needsComma = true;
+    } else {
+      jsonString.append("," + node.second.getJsonString());
+    }
+  }
+  jsonString.append("\n]");
+  std::remove("./DBFileFormats/dbgraph.json");
+  if (!std::ifstream{"file1.txt"}) // uses operator! of temporary stream object
+  {
+    std::perror("Error opening deleted file");
+  }
+  std::ofstream fileStream = std::ofstream("./DBFileFormats/dbgraph.json");
+  bool ok = static_cast<bool>(fileStream); // create file
+  if (!ok) {
+    std::perror("Error creating file");
+  }
+  else{
+    fileStream << jsonString;
+    fileStream.close();
   }
 }

@@ -16,12 +16,13 @@ public:
   //that is alive for the duration of the CipherParser classes lifetime
   simdjson::dom::parser jsonParser;
 
-  simdjson::dom::object getJsonFromMapAndDeleteItFromMemory(
+  simdjson::dom::object getJsonFromMapFreeMap(
       std::unique_ptr<std::unordered_map<std::string,
                                          std::variant<int, float, std::string>>>
           map);
   void parse(std::string);
   CipherEdge parseRelation(std::string, int *);
+  void executeCreate(DBGraph<JsonAttribute, JsonAttribute> *);
   CipherEntity parseEntity(std::string, int *, char);
   std::unique_ptr<
       std::unordered_map<std::string, std::variant<int, float, std::string>>>

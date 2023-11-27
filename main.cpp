@@ -8,8 +8,11 @@
 
 int main() {
   simdjson::dom::parser parser;
-  simdjson::padded_string json =
-      simdjson::padded_string::load("./DBFileFormats/graphA.json");
+  /* simdjson::padded_string json =
+      simdjson::padded_string::load("./DBFileFormats/graphA.json"); */
+      simdjson::padded_string json =
+      simdjson::padded_string::load("./DBFileFormats/dbgraph.json");  
+
 
   std::vector<NodeAttribute<JsonAttribute, JsonAttribute>> nodeList;
   // parsing in the graph from JSON
@@ -21,7 +24,6 @@ int main() {
   DBGraph<JsonAttribute, JsonAttribute> graph =
       DBGraph<JsonAttribute, JsonAttribute>(nodeList);
   // auto result = graph.getNodesWithEdgeLabel(0, "Likes");
-  std::cout << "edge to: " << graph.nodes.find("superid")->second.textVal;
   CipherParser Cparser;
   ;
 
@@ -34,23 +36,10 @@ int main() {
   */
 
   // example query for debug
-  input = "(bob:User{age: 50})-[:Wrote{timeSpent : "
-          "'abasdasdasd'}]->(book:Book{edition:2})";
+  input = "(Jonathan:User{age: 50})-[:Wrote{timeSpent : "
+          "'abasdasdasd'}]->(wrote:Book{edition:2})";
 
   Cparser.parse(input);
   Cparser.executeQuery(&graph);
-  std::string testResult;
-  testResult.append("{\n\"nodes\" [");
-  bool needsComma = false;
-  for (auto &node : graph.nodes) {
-    if (needsComma == false) {
-      testResult.append(node.second.getJsonString());
-      needsComma = true;
-    } else {
-      testResult.append("," + node.second.getJsonString());
-    }
-  }
-  testResult.append("]\n }");
-  std::cout << testResult;
-return 0;
+  return 0;
 }

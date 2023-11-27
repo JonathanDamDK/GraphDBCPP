@@ -5,7 +5,7 @@
 #include <string_view>
 template <class T, class E> NodeAttribute<T, E>::NodeAttribute() {}
 template <class T, class E> std::string NodeAttribute<T, E>::getJsonString() {
-  std::string result = "{\"uid\" : \"" + uid + "\",\n \"labels \" : [ ";
+  std::string result = "{\"uid\" : \"" + uid + "\",\n \"labels\" : [ ";
   bool haveComma = false;
   for (auto label : labels) {
     if (haveComma == false) {
@@ -40,7 +40,7 @@ void NodeAttribute<T, E>::mapJson(simdjson::dom::object obj) {
                 "The base of NodeAttribute does not derive from attribute");
   // parse the value of the node
   try {
-    textVal = obj["textVal"];
+    //textVal = obj["textVal"];
   } catch (simdjson::simdjson_error err) {
     std::cout << "\n Something went wrong while parsing textVal + " +
                      std::string(err.what()) + "\n";
