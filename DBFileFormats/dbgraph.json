@@ -1,0 +1,17 @@
+[{"uid" : "Emilie",
+ "labels" : [ "User"], 
+"edges" : []
+},{"uid" : "alice",
+ "labels" : [ "User"], 
+"edges" : []
+},{"uid" : "bob",
+ "labels" : [ "User"], 
+"edges" : [{ "to" : "jane", "label": "Likes"}]
+},{"uid" : "jane",
+ "labels" : [ "User"], 
+"edges" : []
+},{"uid" : "lol",
+ "labels" : [ "User"], 
+"edges" : []
+}
+]

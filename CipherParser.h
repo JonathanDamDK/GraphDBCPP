@@ -21,16 +21,18 @@ public:
                                          std::variant<int, float, std::string>>>
           map);
   void parse(std::string);
-  CipherEdge parseRelation(std::string, int *);
+  void parseCipherCommand(std::string, int*);
+  CipherEdge parseRelation(std::string, int*);
   void executeCreate(DBGraph<JsonAttribute, JsonAttribute> *);
-  CipherEntity parseEntity(std::string, int *, char);
+  CipherEntity parseEntity(std::string, int*, char);
   std::unique_ptr<
       std::unordered_map<std::string, std::variant<int, float, std::string>>>
-  parseAttributes(std::string, int *);
+  parseAttributes(std::string, int*);
   void executeQuery(DBGraph<JsonAttribute, JsonAttribute> *);
   CipherEdge *pendingEdge;
   std::vector<CipherEdge> edges;
   std::vector<CipherEntity> nodes;
   bool isPendingEdge;
   std::string previousIdentifier;
+  std::string command;
 };

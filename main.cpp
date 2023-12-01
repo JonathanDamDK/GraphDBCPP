@@ -10,10 +10,13 @@ int main() {
   simdjson::dom::parser parser;
   /* simdjson::padded_string json =
       simdjson::padded_string::load("./DBFileFormats/graphA.json"); */
-      simdjson::padded_string json =
-      simdjson::padded_string::load("./DBFileFormats/dbgraph.json");  
-
-
+  simdjson::padded_string json;
+  try {
+    json = simdjson::padded_string::load("./DBFileFormats/dbgraph.json");
+  } catch (simdjson::simdjson_error &e) {
+    std::cout << "catch";
+    json = simdjson::padded_string(std::string_view("[]"));
+  }
   std::vector<NodeAttribute<JsonAttribute, JsonAttribute>> nodeList;
   // parsing in the graph from JSON
   for (simdjson::dom::object node : parser.parse(json)) {
@@ -27,19 +30,20 @@ int main() {
   CipherParser Cparser;
   ;
 
-  std::string input;
-  /*
+  std::string input = "";
+
   // if the query should be written at runtime
-  //
-  std::cout << "Please write query: " << std::endl;
-  std::getline(std::cin, input);
-  */
+ /* while (input.compare("quit") != 0) {
 
+    //std::cout << "Please write query: " << std::endl;
+    //std::getline(std::cin, input);
+    //Cparser.parse(input);
+    Cparser.executeQuery(&graph);
+  }*/
   // example query for debug
-  input = "(Jonathan:User{age: 50})-[:Wrote{timeSpent : "
-          "'abasdasdasd'}]->(wrote:Book{edition:2})";
-
+  input = "CREATE(Emilie:User)";
   Cparser.parse(input);
   Cparser.executeQuery(&graph);
+
   return 0;
 }

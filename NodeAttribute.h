@@ -18,6 +18,7 @@ public:
   void setHasAttributesTrue(){
       hasAttributes = true;
   }
+  bool getHasattributes(){return hasAttributes;}
 private:
   bool hasAttributes = false;
 };

@@ -20,6 +20,7 @@ template <class T, class E> std::string NodeAttribute<T, E>::getJsonString() {
   for (auto edge : edges) {
     if (needsComma == false) { // first element only
       result.append(edge.getJsonString());
+      needsComma = true;
     } else {
       result.append("," + edge.getJsonString());
     }

@@ -56,15 +56,54 @@ simdjson::dom::object CipherParser::getJsonFromMapFreeMap(
 std::string parseAttributeIdentifier(std::string string, int *index);
 std::variant<int, float, std::string> parseAttributeValue(std::string string,
                                                           int *index);
+void CipherParser::parseCipherCommand(std::string input, int *index) {
+  if (input[*index] == 'C') {
+    char createWord[] = "CREATE";
+    for (auto letter : createWord) {
+      char inputLetter = input[*index];
+      if (letter == '\0') {
+      } else if (inputLetter == letter) {
+        *index += 1;
+      } else {
+        std::cout << "letter mismatch: " << input[*index] << " and " << letter << "\n";
+        return;
+      }
+    }
+    command = "CREATE";
+
+    std::cout << "Successfull parse of CREATE" << "\n";
+  }
+  //MATCH 
+  if (input[*index] == 'M') {
+    char matchName[] = "MATCH";
+    for (auto letter : matchName) {
+      char inputLetter = input[*index];
+      if (letter == '\0') {
+      } else if (inputLetter == letter) {
+        *index += 1;
+      } else {
+        std::cout << "letter mismatch: " << input[*index] << " and " << letter << "\n";
+        return;
+      }
+    }
+    command = "Match";
+
+    std::cout << "Successfull parse of MATCH" << "\n";
+  }
+
+}
 
 void CipherParser::parse(std::string string) {
   int i = 0;
   while (i < string.size()) {
     switch (string[i]) {
+    case 'M':
+    case 'C':
+      parseCipherCommand(string, &i);
+      break;
     case '(': {
       i += 1; // consume '('
       auto entity = parseEntity(string, &i, ')');
-      auto debug = string[i];
       if (isPendingEdge) {
         pendingEdge->to = entity.identifier;
         edges.push_back(std::move(*pendingEdge));
@@ -184,8 +223,8 @@ CipherEntity CipherParser::parseEntity(std::string string, int *index,
   result.labels = labels;
   result.attributes = std::move(attributes);
   result.identifier = identifier;
-  // consume the close operator, this if statement SHOULD always be true but it
-  // is a safeguard for now, can possibly be removed.
+  // consume the close operator, this if statement SHOULD always be true but
+  // it is a safeguard for now, can possibly be removed.
   if (current == delimeter) {
     *index += 1;
   }
@@ -297,7 +336,12 @@ std::string parseAttributeIdentifier(std::string string, int *index) {
   return result;
 }
 void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
-  executeCreate(graph);
+  if(command.compare("CREATE") == 0){
+    executeCreate(graph);
+  }
+  else{
+    std::cout << "match my guy" << "\n";
+  }
 }
 
 void CipherParser::executeCreate(DBGraph<JsonAttribute, JsonAttribute> *graph) {
@@ -311,10 +355,18 @@ void CipherParser::executeCreate(DBGraph<JsonAttribute, JsonAttribute> *graph) {
     resultNode.labels = std::move(node.labels);
     resultNode.textVal = node.identifier;
     resultNode.attributes = JsonAttribute();
-    simdjson::dom::object result =
-        getJsonFromMapFreeMap(std::move(node.attributes));
-    resultNode.attributes.mapJson(result);
-    graph->nodes.emplace(node.identifier, std::move(resultNode));
+    if (resultNode.getHasattributes()) {
+      simdjson::dom::object result =
+          getJsonFromMapFreeMap(std::move(node.attributes));
+      resultNode.attributes.mapJson(std::move(result));
+    }
+    if (auto elem = graph->nodes.find(node.identifier);
+        elem != graph->nodes.end()) {
+      std::cout << "node " + resultNode.uid + "already exists!" << std::endl;
+      return;
+    } else {
+      graph->nodes.emplace(node.identifier, std::move(resultNode));
+    }
   }
   // pretty bad
   for (auto &edge : edges) {
@@ -346,8 +398,7 @@ void CipherParser::executeCreate(DBGraph<JsonAttribute, JsonAttribute> *graph) {
   bool ok = static_cast<bool>(fileStream); // create file
   if (!ok) {
     std::perror("Error creating file");
-  }
-  else{
+  } else {
     fileStream << jsonString;
     fileStream.close();
   }
