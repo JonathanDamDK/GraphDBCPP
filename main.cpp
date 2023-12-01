@@ -41,7 +41,7 @@ int main() {
     Cparser.executeQuery(&graph);
   }*/
   // example query for debug
-  input = "CREATE(Emilie:User)";
+  input = "Match(a:User{name : 'Jonathan'})";
   Cparser.parse(input);
   Cparser.executeQuery(&graph);
 

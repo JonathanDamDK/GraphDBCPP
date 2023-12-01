@@ -1,17 +1,10 @@
-[{"uid" : "Emilie",
+[{"uid" : "uidstuffhereagain",
  "labels" : [ "User"], 
-"edges" : []
-},{"uid" : "alice",
+"edges" : [],
+ "attributes" : {"name":"Jonathan"}
+},{"uid" : "uidstuffhere",
  "labels" : [ "User"], 
-"edges" : []
-},{"uid" : "bob",
- "labels" : [ "User"], 
-"edges" : [{ "to" : "jane", "label": "Likes"}]
-},{"uid" : "jane",
- "labels" : [ "User"], 
-"edges" : []
-},{"uid" : "lol",
- "labels" : [ "User"], 
-"edges" : []
+"edges" : [],
+ "attributes" : {"name":"Emilie"}
 }
 ]

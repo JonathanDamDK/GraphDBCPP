@@ -39,7 +39,7 @@ simdjson::dom::object CipherParser::getJsonFromMapFreeMap(
 
       } catch (std::bad_variant_access) {
         std::string res = std::get<std::string>(elem.second);
-        JSON.append(res);
+        JSON.append("\"" + res + "\"");
       }
     }
     count++;
@@ -48,6 +48,8 @@ simdjson::dom::object CipherParser::getJsonFromMapFreeMap(
     }
   }
   JSON.append("}");
+
+  std::cout << JSON << "\n";
   // use class attached json parser instance to avoid nasty memory errors. As
   // soon as the parser is deleted so is all its dom::objects, might be fixable.
   result = jsonParser.parse(JSON);
@@ -65,15 +67,17 @@ void CipherParser::parseCipherCommand(std::string input, int *index) {
       } else if (inputLetter == letter) {
         *index += 1;
       } else {
-        std::cout << "letter mismatch: " << input[*index] << " and " << letter << "\n";
+        std::cout << "letter mismatch: " << input[*index] << " and " << letter
+                  << "\n";
         return;
       }
     }
     command = "CREATE";
 
-    std::cout << "Successfull parse of CREATE" << "\n";
+    std::cout << "Successfull parse of CREATE"
+              << "\n";
   }
-  //MATCH 
+  // MATCH
   if (input[*index] == 'M') {
     char matchName[] = "MATCH";
     for (auto letter : matchName) {
@@ -82,15 +86,16 @@ void CipherParser::parseCipherCommand(std::string input, int *index) {
       } else if (inputLetter == letter) {
         *index += 1;
       } else {
-        std::cout << "letter mismatch: " << input[*index] << " and " << letter << "\n";
+        std::cout << "letter mismatch: " << input[*index] << " and " << letter
+                  << "\n";
         return;
       }
     }
     command = "Match";
 
-    std::cout << "Successfull parse of MATCH" << "\n";
+    std::cout << "Successfull parse of MATCH"
+              << "\n";
   }
-
 }
 
 void CipherParser::parse(std::string string) {
@@ -336,14 +341,26 @@ std::string parseAttributeIdentifier(std::string string, int *index) {
   return result;
 }
 void CipherParser::executeQuery(DBGraph<JsonAttribute, JsonAttribute> *graph) {
-  if(command.compare("CREATE") == 0){
+  if (command.compare("CREATE") == 0) {
     executeCreate(graph);
-  }
-  else{
-    std::cout << "match my guy" << "\n";
+  } else if ("MATCH") {
+    executeMatch(*graph);
   }
 }
-
+NodeAttribute<JsonAttribute, JsonAttribute>
+CipherParser::executeMatch(DBGraph<JsonAttribute, JsonAttribute> graph) {
+  // search every node to see if it matches the match query
+  NodeAttribute<JsonAttribute, JsonAttribute> ResNode;
+  for (auto &node : graph.nodes) {
+    for (auto &pair : *(nodes[0].attributes)) {
+          try {
+       auto nodeProp = node.second.attributes.jsonObj.at_key(pair.first);
+      } catch (simdjson::simdjson_error err) {
+        continue;
+      }
+    }
+  }
+}
 void CipherParser::executeCreate(DBGraph<JsonAttribute, JsonAttribute> *graph) {
   // convert it to NodeAttribute instead
   for (CipherEntity &node : nodes) {
